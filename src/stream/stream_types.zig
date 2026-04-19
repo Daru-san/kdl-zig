@@ -97,12 +97,12 @@ pub const ChunkedSource = struct {
 /// Strings are appended and referenced by StringRef.
 /// Entire pool freed at once - no per-string deallocation.
 pub const StringPool = struct {
-    data: std.ArrayListUnmanaged(u8),
+    data: std.ArrayList(u8),
     allocator: Allocator,
 
     pub fn init(allocator: Allocator) Allocator.Error!StringPool {
         var pool = StringPool{
-            .data = .{},
+            .data = .empty,
             .allocator = allocator,
         };
         // Reserve offset 0 with a sentinel byte so empty strings added later
@@ -176,14 +176,14 @@ pub const StreamProperty = struct {
 
 /// Storage for values (arguments and properties).
 pub const ValuePool = struct {
-    arguments: std.ArrayListUnmanaged(StreamTypedValue),
-    properties: std.ArrayListUnmanaged(StreamProperty),
+    arguments: std.ArrayList(StreamTypedValue),
+    properties: std.ArrayList(StreamProperty),
     allocator: Allocator,
 
     pub fn init(allocator: Allocator) ValuePool {
         return .{
-            .arguments = .{},
-            .properties = .{},
+            .arguments = .empty,
+            .properties = .empty,
             .allocator = allocator,
         };
     }
@@ -224,31 +224,31 @@ pub const ValuePool = struct {
 /// Each array is parallel - index i in all arrays refers to same node.
 pub const NodeStorage = struct {
     /// Node names (StringRef into StringPool)
-    names: std.ArrayListUnmanaged(StringRef),
+    names: std.ArrayList(StringRef),
     /// Type annotations (StringRef.empty if none)
-    type_annotations: std.ArrayListUnmanaged(StringRef),
+    type_annotations: std.ArrayList(StringRef),
     /// Parent node (null for top-level)
-    parents: std.ArrayListUnmanaged(?NodeHandle),
+    parents: std.ArrayList(?NodeHandle),
     /// First child node (null if no children)
-    first_child: std.ArrayListUnmanaged(?NodeHandle),
+    first_child: std.ArrayList(?NodeHandle),
     /// Next sibling node (null if last)
-    next_sibling: std.ArrayListUnmanaged(?NodeHandle),
+    next_sibling: std.ArrayList(?NodeHandle),
     /// Range into ValuePool.arguments
-    arg_ranges: std.ArrayListUnmanaged(Range),
+    arg_ranges: std.ArrayList(Range),
     /// Range into ValuePool.properties
-    prop_ranges: std.ArrayListUnmanaged(Range),
+    prop_ranges: std.ArrayList(Range),
 
     allocator: Allocator,
 
     pub fn init(allocator: Allocator) NodeStorage {
         return .{
-            .names = .{},
-            .type_annotations = .{},
-            .parents = .{},
-            .first_child = .{},
-            .next_sibling = .{},
-            .arg_ranges = .{},
-            .prop_ranges = .{},
+            .names = .empty,
+            .type_annotations = .empty,
+            .parents = .empty,
+            .first_child = .empty,
+            .next_sibling = .empty,
+            .arg_ranges = .empty,
+            .prop_ranges = .empty,
             .allocator = allocator,
         };
     }
@@ -353,7 +353,7 @@ pub const StreamDocument = struct {
     values: ValuePool,
     nodes: NodeStorage,
     /// Top-level nodes (handles into nodes)
-    roots: std.ArrayListUnmanaged(NodeHandle),
+    roots: std.ArrayList(NodeHandle),
     allocator: Allocator,
     /// Optional source buffer for borrowed string references.
     /// When set, borrowed StringRefs point into this buffer.
@@ -367,7 +367,7 @@ pub const StreamDocument = struct {
             .strings = try StringPool.init(allocator),
             .values = ValuePool.init(allocator),
             .nodes = NodeStorage.init(allocator),
-            .roots = .{},
+            .roots = .empty,
             .allocator = allocator,
             .source = null,
             .chunked_source = null,
@@ -380,7 +380,7 @@ pub const StreamDocument = struct {
             .strings = try StringPool.init(allocator),
             .values = ValuePool.init(allocator),
             .nodes = NodeStorage.init(allocator),
-            .roots = .{},
+            .roots = .empty,
             .allocator = allocator,
             .source = source,
             .chunked_source = null,
@@ -394,7 +394,7 @@ pub const StreamDocument = struct {
             .strings = try StringPool.init(allocator),
             .values = ValuePool.init(allocator),
             .nodes = NodeStorage.init(allocator),
-            .roots = .{},
+            .roots = .empty,
             .allocator = allocator,
             .source = null,
             .chunked_source = source,

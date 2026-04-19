@@ -63,7 +63,7 @@ pub fn preprocess(allocator: std.mem.Allocator, source: []const u8) !Preprocesse
     if (source.len == 0) return .{ .indices = &[_]u64{}, .count = 0, .source_len = 0 };
 
     const initial_cap = @max(source.len / 8, 64);
-    var indices = std.ArrayListUnmanaged(u64){};
+    var indices = std.ArrayList(u64).empty;
     try indices.ensureTotalCapacity(allocator, initial_cap);
     errdefer indices.deinit(allocator);
 
