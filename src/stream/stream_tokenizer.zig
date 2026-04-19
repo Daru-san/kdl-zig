@@ -72,7 +72,7 @@ pub const StreamingTokenizer = struct {
         input_start: usize,
         input_end: usize,
         /// Token accumulator (for tokens spanning chunks)
-        token_buffer: std.ArrayListUnmanaged(u8),
+        token_buffer: std.ArrayList(u8),
         /// Current position in input buffer
         pos: usize,
         /// Line/column tracking
@@ -94,7 +94,7 @@ pub const StreamingTokenizer = struct {
                 .input_buffer = input_buffer,
                 .input_start = 0,
                 .input_end = 0,
-                .token_buffer = .{},
+                .token_buffer = .empty,
                 .pos = 0,
                 .line = 1,
                 .column = 1,
